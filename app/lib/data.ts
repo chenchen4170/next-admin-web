@@ -29,6 +29,7 @@ export async function fetchRevenue() {
 }
 
 export async function fetchLatestInvoices() {
+  await new Promise((resolve) => setTimeout(resolve, 1000));
   try {
     const data = invoices
       .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
@@ -56,6 +57,7 @@ export async function fetchLatestInvoices() {
 }
 
 export async function fetchCardData() {
+  await new Promise((resolve) => setTimeout(resolve, 500));
   try {
     const invoiceCountPromise = Promise.resolve([{ count: invoices.length }]);
     const customerCountPromise = Promise.resolve([{ count: customers.length }]);
