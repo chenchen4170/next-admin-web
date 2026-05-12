@@ -106,7 +106,7 @@ export async function fetchFilteredInvoices(
     const data = invoices.map((invoice) => {
       const customer = customers.find((c) => c.id === invoice.customer_id);
       return {
-        id: invoice.customer_id,
+        id: invoice.customer_id + "-" + invoice.date, // mock database id
         amount: invoice.amount,
         date: invoice.date,
         status: invoice.status,
