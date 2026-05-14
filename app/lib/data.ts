@@ -9,6 +9,7 @@ import {
 } from "./definitions";
 import { formatCurrency } from "./utils";
 import { invoices, customers, revenue } from "./placeholder-data";
+import { notFound } from "next/navigation";
 
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: "require" });
 
@@ -134,7 +135,6 @@ export async function fetchFilteredInvoices(
 
 export async function fetchInvoicesPages(query: string) {
   try {
-   
     const data = invoices.map((invoice) => {
       const customer = customers.find((c) => c.id === invoice.customer_id);
       return {
@@ -161,26 +161,27 @@ export async function fetchInvoicesPages(query: string) {
 }
 
 export async function fetchInvoiceById(id: string) {
-  try {
-
-    const data = invoices.map((invoice) => ({
+  const data = invoices
+    .map((invoice) => ({
       id: invoice.customer_id + "-" + invoice.date, // mock database id
       amount: invoice.amount,
       status: invoice.status,
       customer_id: invoice.customer_id,
-    })).find((invoice) => invoice.id === id);
+    }))
+    .find((invoice) => invoice.id === id);
 
-    //convert amount from cents to dollars
-    if (data) {
-      data.amount = data.amount / 100;
-    }
+  if (!data) {
+    notFound();
+  }
+  try {
+    data.amount = data.amount / 100;
 
     //convert data to InvoiceForm
     const invoice: InvoiceForm = {
       id: data?.id ?? "",
       customer_id: data?.customer_id ?? "",
       amount: data?.amount ?? 0,
-      status: data?.status as 'pending' | 'paid' ?? 'pending',
+      status: (data?.status as "pending" | "paid") ?? "pending",
     };
 
     return invoice;
